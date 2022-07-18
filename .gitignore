@@ -9,3 +9,6 @@ build/
 kintree/tests/*
 .coverage
 htmlcov/
+env-kintree/
+.directory
+.idea

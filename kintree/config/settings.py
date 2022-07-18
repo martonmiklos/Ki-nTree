@@ -205,6 +205,14 @@ def set_kicad_enable_flag(value: bool, save=False):
         config_interface.dump_file(kicad_user_settings, CONFIG_KICAD)
     return
 
+def set_default_supplier(value: str, save=False):
+    global DEFAULT_SUPPLIER
+    DEFAULT_SUPPLIER = value
+    if save:
+        user_settings = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'general.yaml'))
+        user_settings['DEFAULT_SUPPLIER'] = value
+        config_interface.dump_file(user_settings, os.path.join(CONFIG_USER_FILES, 'general.yaml'))
+    return
 
 def set_default_supplier(value: str, save=False):
     global DEFAULT_SUPPLIER
