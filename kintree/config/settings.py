@@ -87,6 +87,9 @@ CONFIG_DIGIKEY_CATEGORIES = os.path.join(CONFIG_USER_FILES, 'digikey_categories.
 # Mouser
 CONFIG_MOUSER_API = os.path.join(CONFIG_USER_FILES, 'mouser_api.yaml')
 
+# TME
+CONFIG_TME_API = os.path.join(CONFIG_USER_FILES, 'tme_api.yaml')
+
 # KiCad
 CONFIG_KICAD = os.path.join(CONFIG_USER_FILES, 'kicad.yaml')
 CONFIG_KICAD_CATEGORY_MAP = os.path.join(CONFIG_USER_FILES, 'kicad_map.yaml')
@@ -114,7 +117,7 @@ AUTOMATIC_BROWSER_OPEN = CONFIG_GENERAL.get('AUTOMATIC_BROWSER_OPEN', False)
 DEFAULT_SUPPLIER = CONFIG_GENERAL.get('DEFAULT_SUPPLIER', 'Digi-Key')
 
 # Supported suppliers APIs
-SUPPORTED_SUPPLIERS_API = ['Digi-Key', 'Mouser', 'LCSC']
+SUPPORTED_SUPPLIERS_API = ['Digi-Key', 'Mouser', 'LCSC', 'TME']
 
 # Digi-Key user configuration
 CONFIG_DIGIKEY = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'digikey_config.yaml'))
@@ -124,6 +127,9 @@ CONFIG_LCSC = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'lcsc_c
 
 # Mouser user configuration
 CONFIG_MOUSER = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'mouser_config.yaml'))
+
+# TME user configuration
+CONFIG_TME = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'tme_config.yaml'))
 
 # Generic API user configuration
 CONFIG_SEARCH_API = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'search_api.yaml'))
@@ -205,14 +211,6 @@ def set_kicad_enable_flag(value: bool, save=False):
         config_interface.dump_file(kicad_user_settings, CONFIG_KICAD)
     return
 
-def set_default_supplier(value: str, save=False):
-    global DEFAULT_SUPPLIER
-    DEFAULT_SUPPLIER = value
-    if save:
-        user_settings = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'general.yaml'))
-        user_settings['DEFAULT_SUPPLIER'] = value
-        config_interface.dump_file(user_settings, os.path.join(CONFIG_USER_FILES, 'general.yaml'))
-    return
 
 def set_default_supplier(value: str, save=False):
     global DEFAULT_SUPPLIER

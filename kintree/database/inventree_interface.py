@@ -7,7 +7,7 @@ from ..common.tools import cprint
 from ..config import config_interface
 from ..database import inventree_api
 from fuzzywuzzy import fuzz
-from ..search import search_api, digikey_api, mouser_api, lcsc_api
+from ..search import search_api, digikey_api, mouser_api, lcsc_api, tme_api
 
 
 def connect_to_server(timeout=5) -> bool:
@@ -254,6 +254,8 @@ def translate_supplier_to_form(supplier: str, part_info: dict) -> dict:
             user_search_key = settings.CONFIG_MOUSER.get(user_key, None)
         elif supplier == 'LCSC':
             user_search_key = settings.CONFIG_LCSC.get(user_key, None)
+        elif supplier == 'TME':
+            user_search_key = settings.CONFIG_TME.get(user_key, None)
         else:
             return default_value
         
@@ -276,6 +278,8 @@ def translate_supplier_to_form(supplier: str, part_info: dict) -> dict:
             supplier_name = settings.CONFIG_MOUSER.get('SUPPLIER_INVENTREE_NAME', None)
         elif supplier == 'LCSC':
             supplier_name = settings.CONFIG_LCSC.get('SUPPLIER_INVENTREE_NAME', None)
+        elif supplier == 'TME':
+            supplier_name = settings.CONFIG_TME.get('SUPPLIER_INVENTREE_NAME', None)
         else:
             supplier_name = supplier
         
@@ -291,6 +295,8 @@ def translate_supplier_to_form(supplier: str, part_info: dict) -> dict:
         default_search_keys = mouser_api.get_default_search_keys()
     elif supplier == 'LCSC':
         default_search_keys = lcsc_api.get_default_search_keys()
+    elif supplier == 'TME':
+        default_search_keys = tme_api.get_default_search_keys()
     else:
         # Empty array of default search keys
         default_search_keys = [''] * len(digikey_api.get_default_search_keys())
@@ -334,6 +340,8 @@ def supplier_search(supplier: str, part_number: str, test_mode=False) -> dict:
             part_info = mouser_api.fetch_part_info(part_number)
         elif supplier == 'LCSC':
             part_info = lcsc_api.fetch_part_info(part_number)
+        elif supplier == 'TME':
+            part_info = tme_api.fetch_part_info(part_number)
 
     # Check supplier data exist
     if not part_info:
