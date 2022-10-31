@@ -66,6 +66,7 @@ def user_settings_window():
         font=gui_global['font'],
         location=gui_global['location'],
     )
+
     us_event, us_values = user_window.read()
     if us_event == sg.WIN_CLOSED:  # if user closes window
         pass
@@ -591,89 +592,55 @@ def part_user_form(part_data: dict, custom=False) -> dict:
 
 def user_defined_categories(category=None, subcategory=None, extend=False) -> list:
     ''' User defined categories window '''
-    categories = [None, None]
+    treedata = sg.TreeData()
 
-    if extend:
-        # Load and synchronize supplier categories with InvenTree categories
-        categories_dict = config_interface.sync_inventree_supplier_categories(inventree_config_path=settings.CONFIG_CATEGORIES,
-                                                                              supplier_config_path=settings.CONFIG_DIGIKEY_CATEGORIES)
-    else:
-        # Load categories from supplier configuration
-        categories_dict = config_interface.load_supplier_categories(supplier_config_path=settings.CONFIG_DIGIKEY_CATEGORIES,
-                                                                    clean=True)
+    for category in inventree_interface.get_category_list(''):
+        treedata.insert('', category.pk, category.name, [])
 
-    # Category choices
-    categories_choices = []
-    subcategories_choices = []
-    subcategory_default = None
-
-    try:
-        for key in categories_dict:
-            categories_choices.append(key)
-
-            if key == category:
-                # Subcategory choices
-                subcategories_choices = [item for item in categories_dict[key]]
-
-        if subcategory:
-            subcategory_default = subcategory
-    except TypeError:
-        # categories_dict is None
-        pass
-
-    # Set default list for subcategory choices
-    if not subcategories_choices:
-        if not subcategory_default:
-            subcategories_choices = ['None']
-        else:
-            subcategories_choices = [subcategory_default]
-    if not subcategory_default:
-        subcategory_default = subcategories_choices[0]
-
-    category_layout = [
-        [
-            sg.Text('Category', size=(12, 1)),
-            sg.Combo(sorted(categories_choices), default_value=category, key='category'),
-            sg.Button('Confirm'),
-        ],
-        [
-            sg.Text('Subcategory', size=(12, 1)),
-            sg.Combo(sorted(subcategories_choices), default_value=subcategory_default, size=(20, 1), key='subcategory_sel'),
-            sg.Text('Or Enter Name '),
-            sg.In(size=(20, 1), key='subcategory_man'),
-        ],
-        [
-            sg.Button('Submit'),
-        ],
+    layout = [
+        [sg.Tree(treedata, headings=[], col0_width=80, num_rows=20, show_expanded=True, enable_events=True,
+                 key='category_tree')],
     ]
 
-    category_window = sg.Window('Categories',
-                                category_layout,
-                                font=gui_global['font'],
-                                location=gui_global['location'], )
-    category_event, category_values = category_window.read()
-    category_window.close()
+    window = sg.Window("Select InvenTree category", layout, finalize=True)
+    tree = window['category_tree']
+    tree.bind('<Double-1>', "-double_click")
+    while True:
+        event, values = window.read()
 
-    if category_event == sg.WIN_CLOSED:
-        return categories
-    elif category_event == 'Confirm':
-        return user_defined_categories(category_values['category'], extend=settings.ENABLE_INVENTREE)
-    else:
-        categories[0] = category_values['category']
-        if category_values['subcategory_man']:
-            categories[1] = category_values['subcategory_man']
-        else:
-            categories[1] = category_values['subcategory_sel']
+        if event == sg.WINDOW_CLOSED:
+            break
 
-        if '' in categories:
-            missing_category = 'Missing category information'
-            cprint(f'[INFO]\tError: {missing_category}')
-            sg.popup_ok(missing_category,
-                        title='Categories',
-                        font=gui_global['font'],
-                        location=gui_global['location'])
+        if event == 'category_tree-double_click':
+            if not len(values['category_tree']) == 1:
+                continue
+            parent_pk = values['category_tree'][0]
 
-        return categories
+            for category in inventree_interface.get_category_list(parent_pk):
+                treedata.insert(parent_pk, category.pk, category.name, [])
+            tree.update(values=treedata)
+
+            """"
+            node = data[parent_key]
+            if node['kind'] == DIR and node['children'] == None:
+                parent_path = Path(node['path']).joinpath(node['file'])
+                try:
+                    files = sorted(list(parent_path.iterdir()), key=lambda file: file.is_file())
+                except:
+                    status.update("Access is denied")
+                    continue
+                node['children'] = []
+                for item in files:
+                    key = new_key()
+                    kind, path, file = item.is_dir(), str(item.parent), item.name
+                    treedata.insert(parent_key, key, str(file), [], icon=folder_icon if kind == DIR else file_icon)
+                    node['children'].append(key)
+                    data[key] = {'kind': kind, 'path': path, 'file': file, 'children': None}
+                tree.update(values=treedata)
+                iid = tree.KeyToID[parent_key]
+                tree.Widget.see(iid)"""
+
+
 
 
 def user_defined_symbol_template_footprint(categories: list,

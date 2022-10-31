@@ -61,6 +61,12 @@ def get_inventree_category_id(category_name: str, parent_category_id=None) -> in
 
     return -1
 
+def get_category_list(parent_id: int) -> list:
+    global inventree_api
+
+    parameter_templates = []
+
+    return PartCategory.list(inventree_api, parent=parent_id)
 
 def get_category_parameters(category_id: int) -> list:
     ''' Get all default parameter templates for category '''

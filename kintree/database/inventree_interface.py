@@ -41,6 +41,8 @@ def connect_to_server(timeout=5) -> bool:
 
     return connect
 
+def get_category_list(parent_id: int) -> list:
+    return inventree_api.get_category_list(parent_id)
 
 def get_categories(part_info: dict, supplier_only=False) -> list:
     ''' Find categories from part supplier data, use "somewhat automatic" matching '''
