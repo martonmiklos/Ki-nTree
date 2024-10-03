@@ -208,6 +208,10 @@ CONFIG_AUTOMATIONDIRECT_API = os.path.join(CONFIG_USER_FILES, 'automationdirect_
 CONFIG_TME = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'tme_config.yaml'))
 CONFIG_TME_API = os.path.join(CONFIG_USER_FILES, 'tme_api.yaml')
 
+# HESTORE user configuration
+CONFIG_HESTORE = config_interface.load_file(os.path.join(CONFIG_USER_FILES, 'hestore_config.yaml'))
+CONFIG_HESTORE_API = os.path.join(CONFIG_USER_FILES, 'hestore_api.yaml')
+
 # Automatic category match confidence level (from 0 to 100)
 CATEGORY_MATCH_RATIO_LIMIT = CONFIG_SEARCH_API.get('CATEGORY_MATCH_RATIO_LIMIT', 100)
 # Search results caching (stored in files)

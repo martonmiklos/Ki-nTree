@@ -728,6 +728,16 @@ class SupplierSettingsView(SettingsView):
             }
             tme_settings = {**settings_from_file, **updated_settings}
             config_interface.dump_file(tme_settings, global_settings.CONFIG_TME_API)
+        elif supplier == 'HESTORE':
+            # Load settings from file
+            settings_from_file = config_interface.load_file(global_settings.CONFIG_HESTORE_API)
+            # Update settings values
+            updated_settings = {
+                'HESTORE_API_TOKEN': SETTINGS[self.title][supplier]['API Token'][1].value,
+                'HESTORE_API_SECRET': SETTINGS[self.title][supplier]['API Secret'][1].value,
+            }
+            hestore_settings = {**settings_from_file, **updated_settings}
+            config_interface.dump_file(hestore_settings, global_settings.CONFIG_HESTORE_API)
         elif supplier == 'AutomationDirect':
             # Load settings from file
             settings_from_file = config_interface.load_file(global_settings.CONFIG_AUTOMATIONDIRECT_API)
@@ -768,6 +778,9 @@ class SupplierSettingsView(SettingsView):
         elif supplier == 'TME':
             from ...search import tme_api
             result = tme_api.test_api()
+        elif supplier == 'HESTORE':
+            from ...search import hestore_api
+            result = hestore_api.test_api()
         elif supplier == 'Jameco':
             from ...search import jameco_api
             result = jameco_api.test_api()
